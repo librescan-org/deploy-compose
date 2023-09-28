@@ -1,0 +1,66 @@
+version: '3.8'
+
+name: librescan
+
+services:
+
+  db:
+    restart: always
+    image: postgres:15.4-alpine3.18
+    environment:
+      POSTGRES_DB: postgres # default, can be omitted
+      POSTGRES_USER: postgres # default, can be omitted
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - db:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  scraper:
+    restart: always
+    image: librescan/backend-scraper
+    environment:
+      RPC_URL: https://eth.llamarpc.com # should be replaced with a paid account endpoint!
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      GENESIS_JSON_PATH: "" # if used for custom chain, genesis must be mounted and path specified
+    networks:
+      - backend
+
+  api:
+    restart: always
+    image: librescan/backend-api
+    environment:
+      QAN_RPC_URL: ""
+      LISTEN: :9090
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    networks:
+      - backend
+      - frontend
+
+  web:
+    restart: always
+    image: librescan/frontend-web
+    environment:
+      NUXT_APP_GRPC_API_URL: service:9090
+    networks:
+      - frontend
+    ports:
+      - 3000:3000
+
+volumes:
+  db:
+
+networks:
+  frontend:
+    driver: bridge
+
+  backend:
+    driver: bridge
