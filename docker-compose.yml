@@ -49,7 +49,7 @@ services:
     restart: always
     image: librescan/frontend-web
     environment:
-      NUXT_APP_GRPC_API_URL: service:9090
+      NUXT_APP_GRPC_API_URL: api:9090
     networks:
       - frontend
     ports:
