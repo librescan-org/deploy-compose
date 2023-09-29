@@ -27,6 +27,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       GENESIS_JSON_PATH: "" # if used for custom chain, genesis must be mounted and path specified
+      LOG_FREQUENCY: 15s
     networks:
       - backend
 
